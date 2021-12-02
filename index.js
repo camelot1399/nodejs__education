@@ -6,7 +6,7 @@ function primeNumbers(startRange, endRange) {
     let start = +startRange;
     let end   = +endRange;
     
-    if (checkOnErrors()) return ;
+    if (checkOnErrors()) return false;
     
     createPrimeNumbers(start, end);
 

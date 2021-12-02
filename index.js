@@ -36,19 +36,19 @@ function logger(number) {
     sendLog(number, currentIndex);
 
     if (currentIndex !== 2) currentIndex++;
-    else currentIndex = 0;
+    else currentIndex = 0;    
+}
 
-    function sendLog(number, index) {
-        switch (index) {
-            case 1:
-                console.log(colors.yellow(number));
-                break;
-            case 2:
-                console.log(colors.red(number));
-                break;
-            default:
-                console.log(colors.green(number));
-        }
+function sendLog(number, index) {
+    switch (index) {
+        case 1:
+            console.log(colors.yellow(number));
+            break;
+        case 2:
+            console.log(colors.red(number));
+            break;
+        default:
+            console.log(colors.green(number));
     }
 }
 

@@ -1,21 +1,20 @@
 let colors = require('colors');
 let [start, end] = process.argv.slice(2);
+let currentIndex = 0;
 
 function primeNumbers(startRange, endRange) {
     let start = +startRange;
     let end   = +endRange;
-    let currentIndex = 0;
-
-    if (checkOnErrors()) {
-        return ;
-    }
-
+    
+    if (checkOnErrors()) return ;
+    
     createPrimeNumbers(start, end);
+
 }
 
 function createPrimeNumbers(start, end) {
     let startPoint;
-
+    
     if (start <= 1) startPoint = 2
     else startPoint = start;
         
@@ -56,25 +55,25 @@ function logger(number) {
 function checkOnErrors() {
     if (isNaN(start)) {
         console.log(colors.red('Начало диапазона не является числом'));
-        return false;
+        return true;
     };
 
     if (isNaN(end)) {
         console.log(colors.red('Конец диапазона не является числом'));
-        return false;
+        return true;
     };
 
     if (!start || !end) {
         console.log(colors.red('Нет входных данных, укажите входные параметры при запуске программы'));
-        return false;
+        return true;
     }
 
     if (end < start) {
         console.log(colors.red('Конец диапазона не может быть меньше начала'));
-        return false;
+        return true;
     };
 
-    return true;
+    return false;
 }
 
 primeNumbers(start, end);

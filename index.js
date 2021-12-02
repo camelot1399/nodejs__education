@@ -5,9 +5,10 @@ function primeNumbers(startRange, endRange) {
     let start = +startRange;
     let end   = +endRange;
 
-    checkOnErrors();
-
-    let currentIndex = 0;
+    if (checkOnErrors()) {
+        let currentIndex = 0;
+        createPrimeNumbers(start, end);
+    }
 
     function createPrimeNumbers(start, end) {
         let startPoint;
@@ -52,28 +53,26 @@ function primeNumbers(startRange, endRange) {
     function checkOnErrors() {
         if (isNaN(start)) {
             console.log(colors.red('Начало диапазона не является числом'));
-            return;
+            return false;
         };
 
         if (isNaN(end)) {
             console.log(colors.red('Конец диапазона не является числом'));
-            return;
+            return false;
         };
 
         if (!start || !end) {
             console.log(colors.red('Нет входных данных, укажите входные параметры при запуске программы'));
-            return;
+            return false;
         }
 
         if (end < start) {
             console.log(colors.red('Конец диапазона не может быть меньше начала'));
-            return;
+            return false;
         };
-        
-        
-    }
 
-    createPrimeNumbers(start, end);
+        return true;
+    }
 }
 
 primeNumbers(start, end);

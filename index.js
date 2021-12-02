@@ -7,72 +7,74 @@ function primeNumbers(startRange, endRange) {
     let currentIndex = 0;
 
     if (checkOnErrors()) {
-        createPrimeNumbers(start, end);
+        return ;
     }
 
-    function createPrimeNumbers(start, end) {
-        let startPoint;
+    createPrimeNumbers(start, end);
+}
 
-        if (start <= 1) startPoint = 2
-        else startPoint = start;
-            
-        Metka:
-        for (let i = startPoint; i < end; i++) {
+function createPrimeNumbers(start, end) {
+    let startPoint;
 
-            for (let j = 2; j < i; j++) {
-                if (i % j === 0) {
-                    continue Metka;
-                }
-            }
-
-            logger(i);
-        }
+    if (start <= 1) startPoint = 2
+    else startPoint = start;
         
+    Metka:
+    for (let i = startPoint; i < end; i++) {
+
+        for (let j = 2; j < i; j++) {
+            if (i % j === 0) {
+                continue Metka;
+            }
+        }
+
+        logger(i);
+    }
+    
+};
+
+function logger(number) {
+    sendLog(number, currentIndex);
+
+    if (currentIndex !== 2) currentIndex++;
+    else currentIndex = 0;
+
+    function sendLog(number, index) {
+        switch (index) {
+            case 1:
+                console.log(colors.yellow(number));
+                break;
+            case 2:
+                console.log(colors.red(number));
+                break;
+            default:
+                console.log(colors.green(number));
+        }
+    }
+}
+
+function checkOnErrors() {
+    if (isNaN(start)) {
+        console.log(colors.red('Начало диапазона не является числом'));
+        return false;
     };
 
-    function logger(number) {
-        sendLog(number, currentIndex);
+    if (isNaN(end)) {
+        console.log(colors.red('Конец диапазона не является числом'));
+        return false;
+    };
 
-        if (currentIndex !== 2) currentIndex++;
-        else currentIndex = 0;
-
-        function sendLog(number, index) {
-            switch (index) {
-                case 1:
-                    console.log(colors.yellow(number));
-                    break;
-                case 2:
-                    console.log(colors.red(number));
-                    break;
-                default:
-                    console.log(colors.green(number));
-            }
-        }
+    if (!start || !end) {
+        console.log(colors.red('Нет входных данных, укажите входные параметры при запуске программы'));
+        return false;
     }
 
-    function checkOnErrors() {
-        if (isNaN(start)) {
-            console.log(colors.red('Начало диапазона не является числом'));
-            return false;
-        };
+    if (end < start) {
+        console.log(colors.red('Конец диапазона не может быть меньше начала'));
+        return false;
+    };
 
-        if (isNaN(end)) {
-            console.log(colors.red('Конец диапазона не является числом'));
-            return false;
-        };
-
-        if (!start || !end) {
-            console.log(colors.red('Нет входных данных, укажите входные параметры при запуске программы'));
-            return false;
-        }
-
-        if (end < start) {
-            console.log(colors.red('Конец диапазона не может быть меньше начала'));
-            return false;
-        };
-
-        return true;
-    }
+    return true;
 }
 
 primeNumbers(start, end);

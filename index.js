@@ -4,9 +4,9 @@ let [start, end] = process.argv.slice(2);
 function primeNumbers(startRange, endRange) {
     let start = +startRange;
     let end   = +endRange;
+    let currentIndex = 0;
 
     if (checkOnErrors()) {
-        let currentIndex = 0;
         createPrimeNumbers(start, end);
     }
 

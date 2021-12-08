@@ -25,7 +25,6 @@ const finish = () => {
 const timer = async (date) => {
     
     const dateX = moment(date);
-    console.log(dateX);
 
     if (dateX === now) return emitter.emit('finish');
 

@@ -1,79 +1,49 @@
-let colors = require('colors');
-let [start, end] = process.argv.slice(2);
-let currentIndex = 0;
+// Напишите программу, которая будет принимать на вход несколько аргументов: дату и время в формате «час-день-месяц-год». 
+// Задача программы — создавать для каждого аргумента таймер с обратным отсчётом: посекундный вывод в терминал состояния таймеров (сколько осталось). 
+// По истечении какого-либо таймера, вместо сообщения о том, сколько осталось, требуется показать сообщение о завершении его работы. Важно, чтобы работа программы основывалась на событиях.
 
-function primeNumbers(startRange, endRange) {
-    let start = +startRange;
-    let end   = +endRange;
-    
-    if (checkOnErrors()) return false;
-    
-    createPrimeNumbers(start, end);
 
-}
 
-function createPrimeNumbers(start, end) {
-    let startPoint;
-    
-    if (start <= 1) startPoint = 2
-    else startPoint = start;
-        
-    Metka:
-    for (let i = startPoint; i < end; i++) {
+const moment = require('moment');
+const EventEmitter = require('events');
+const now = moment();
+const emitter  = new EventEmitter();
 
-        for (let j = 2; j < i; j++) {
-            if (i % j === 0) {
-                continue Metka;
-            }
-        }
-
-        logger(i);
+class DateX {
+    constructor([hour, day, month, year]) {
+        this.hour = hour;
+        this.day = day;
+        this.month = month;
+        this.year = year;
     }
-    
 };
 
-function logger(number) {
-    sendLog(number, currentIndex);
-
-    if (currentIndex !== 2) currentIndex++;
-    else currentIndex = 0;    
+const finish = () => {
+    return 'Поздаввляю, это конэц =)';
 }
 
-function sendLog(number, index) {
-    switch (index) {
-        case 1:
-            console.log(colors.yellow(number));
-            break;
-        case 2:
-            console.log(colors.red(number));
-            break;
-        default:
-            console.log(colors.green(number));
-    }
+const timer = async (date) => {
+    
+    const dateX = moment(date);
+    console.log(dateX);
+
+    if (dateX === now) return emitter.emit('finish');
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    let result = await moment(date).subtract(now);
+
+    console.log(`Осталось ${result.format('DD')} дней ${result.format('h:mm:ss')}`);
+    emitter.emit('timer', date);
 }
 
-function checkOnErrors() {
-    if (isNaN(start)) {
-        console.log(colors.red('Начало диапазона не является числом'));
-        return true;
-    };
+emitter.on('timer', (date) => timer(date));
+emitter.on('welcome', () => finish());
 
-    if (isNaN(end)) {
-        console.log(colors.red('Конец диапазона не является числом'));
-        return true;
-    };
+const run = async (string) => {
+    const date = string.split('-');
+    const dateX = new DateX(date)
+    
+    timer(dateX);
+};
 
-    if (!start || !end) {
-        console.log(colors.red('Нет входных данных, укажите входные параметры при запуске программы'));
-        return true;
-    }
-
-    if (end < start) {
-        console.log(colors.red('Конец диапазона не может быть меньше начала'));
-        return true;
-    };
-
-    return false;
-}
-
-primeNumbers(start, end);
+run('20-08-12-2022');

@@ -6,7 +6,7 @@
 
 const moment = require('moment');
 const EventEmitter = require('events');
-const now = moment();
+
 const emitter  = new EventEmitter();
 
 class DateX {
@@ -22,27 +22,29 @@ const finish = () => {
     return 'Поздаввляю, это конэц =)';
 }
 
-const timer = async (date) => {
-    
-    const dateX = moment(date);
-
-    if (dateX === now) return emitter.emit('finish');
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    let result = await moment(date).subtract(now);
-
-    console.log(`Осталось ${result.format('DD')} дней ${result.format('h:mm:ss')}`);
-    emitter.emit('timer', date);
+const startTimer = (date) => {
+    setTimeout(() => timer(date), 1000);
 }
 
-emitter.on('timer', (date) => timer(date));
-emitter.on('welcome', () => finish());
+const timer = (date) => {
+    const now = moment();
 
-const run = async (string) => {
+    if (moment(date) === now) return emitter.emit('finish');
+    
+    let result = moment(date).subtract(now);
+    console.log(`Осталось ${result.format('DD')} дней ${result.format('h:mm:ss')}`);
+
+    emitter.emit('startTimer', date);
+}
+
+emitter.on('startTimer', (date) => startTimer(date));
+emitter.on('finish', () => finish());
+
+const run = (string) => {
     const date = string.split('-');
     const dateX = new DateX(date)
     
     timer(dateX);
 };
 
-run('20-08-12-2022');
+run('00-01-01-2022');

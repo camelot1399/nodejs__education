@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="container">
+            <div id="autorization">
+                <h1>Вход в чат</h1>
+
+                <div class="form1">
+                    <label for="userName">Имя</label>
+                    <input type="text" id="userName">
+                    <button class="sendAuthButton">Войти</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const socket = io("http://localhost:5555");
+    const userName = document.querySelector('#userName');
+    const sendAuthButton = document.querySelector('.sendAuthButton');
+
+    sendAuthButton.addEventListener('click', () => {
+        const data = {
+            userName: userName.value,
+        };
+
+        socket.emit('client-auth', data);
+        input.value = '';
+    });
+    
+
+    (() => {
+        const localStorageId = localStorage.getItem('id');
+
+        if (localStorageId) {
+            socket.emit('client-checkUserId', localStorageId);
+        };
+        
+    })();
+
+    socket.on('connect', () => {
+        console.log('connected');
+    });
+
+    socket.on('server-msg-auth', (payload) => {
+
+        console.log(window.location.pathname);
+
+        if (payload.status === 204) {
+            if (window.location.pathname !== '/') {
+                window.location.href = '/';
+            }
+            return null;
+        };
+
+        console.log('server-msg-auth');
+        console.log(payload);
+
+        localStorage.setItem('id', payload.id);
+        localStorage.setItem('name', payload.userName);
+        localStorage.setItem('color', payload.color);
+
+        window.location.href = '/chat';
+    });
+
+    </script>
+</body>
+</html>

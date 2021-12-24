@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница чата</title>
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="./public/assets/css/style.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="container">
+            <div class="stats">
+                Сейчас в онлайне: <span id="usersCountOnline"></span> человек
+            </div>
+
+            <div id="autorization">
+                <h1>Вход в чат</h1>
+
+                <form class="form1">
+                    <label for="userName">Имя</label>
+                    <input type="text" id="userName">
+                    <button class="sendAuthButton">Войти</button>
+
+                    <div class="error">пусто</div>
+                </form>
+
+            </div>
+
+            <div class="chat">
+                <form action="#">
+                    <label for="input">Сообщение</label>
+                    <input type="text" id="input" autofocus>
+
+                    <button id="button">Send</button>
+                </form>
+
+                <div id="messages">
+                    <h3>Блок сообщений:</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const socket = io("http://localhost:5555");
+    const messageBlock = document.querySelector('#messages');
+    const sendButton = document.querySelector('#button');
+    const input = document.querySelector('#input');
+    const userName = document.querySelector('#userName');
+    const sendAuthButton = document.querySelector('.sendAuthButton');
+    const usersCountOnline = document.querySelector('#usersCountOnline');
+
+    sendAuthButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        console.log(userName.value);
+
+        if (userName.value === '') return;
+        const data = {
+            userName: userName.value,
+        };
+
+        socket.emit('client-auth', data);
+        input.value = '';
+    });
+    
+    // (() => {
+    //     const localStorageId = localStorage.getItem('id');
+
+    //     if (localStorageId) {
+    //         socket.emit('client-checkUserId', localStorageId);
+    //     };
+        
+    // })();
+
+    
+    sendButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const data = {
+            message: input.value,
+            userName: userName.value,
+            date: new Date(),
+        }
+
+        console.log(data);
+
+        socket.emit('client-msg', data);
+        input.value = '';
+    });
+
+    socket.on('connect', () => {
+        console.log('connected');
+    });
+
+    socket.on('server-msg', (payload) => {
+        console.log(payload);
+        let html = `
+        <div class="message">
+            <div class="user__info">
+                <div style="color: ${payload.user.color}" class="user__name">${payload.user.name}</div>    
+                <div class="user__time">${payload.message.date}</div>
+            </div>
+            
+            <div>${payload.message.message}</div>
+        </div>
+        `
+
+        messageBlock.insertAdjacentHTML('afterend', html);
+    });
+
+    socket.on('server-msg-userCountOnline', (users) => {
+
+        usersCountOnline.innerText = users;
+    });
+
+    socket.on('server-msg-auth', (payload) => {
+
+        console.log(payload);
+
+        // if (payload.status === 204) {
+        //     console.log(204);
+        //     return null;
+        // };
+
+        console.log(payload);
+
+        let authBlock = document.querySelector('#autorization');
+        authBlock.innerHTML = '';
+
+        console.log('server-msg-auth');
+        console.log(payload);
+
+        // localStorage.setItem('id', payload.id);
+        // localStorage.setItem('name', payload.userName);
+        // localStorage.setItem('color', payload.color);
+    });
+    socket.on('server-msg-userConneсted', (userName) => {
+        console.log(userName);
+
+        messageBlock.insertAdjacentHTML('afterend', `<div>К нам в чат вошел: <b>${userName}</b>!</div>`);
+    });
+    socket.on('server-msg-userOut', (user) => {
+        console.log(user);
+
+        messageBlock.insertAdjacentHTML('afterend', `<div class="user__disconnect">Пользователь <b>${user.name}</b> вышел из чата!</div>`);
+    });
+    </script>
+</body>
+</html>
